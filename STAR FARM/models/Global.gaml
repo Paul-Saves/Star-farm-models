@@ -36,6 +36,10 @@ global {
 	
 	float rain_last_days <- 0.0;
 	
+	bool save_calibration_results <- false;
+	bool write_calibration_result <- false;
+	string calibration_output <- "../Experiments/Calibration/calibration_result.csv";
+	
 	bool mode_batch <- false;
    
 	bool end_of_sim <- false; 
