@@ -1,4 +1,6 @@
 
+model Test
+
 global {
     int my_param <- 0;
     init {
