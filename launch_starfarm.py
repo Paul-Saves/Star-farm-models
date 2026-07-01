@@ -10,7 +10,7 @@ MODEL_PATH = os.path.join(BASE_DIR, "STAR FARM", "models", "Experiments", "Calib
 CSV_PATH = os.path.join(BASE_DIR, "STAR FARM", "models", "Experiments", "Calibration", "calibration_result.csv")
 EXPERIMENT_NAME = "single_evaluation"
 PORT = 6868
-NUM_CLIENTS = 4
+NUM_CLIENTS = 2
 
 # --- INPUT: parameter definitions (name, default, min, max, step) ---
 # Aligned with Calibration and Validation.gaml calibration_ experiment
@@ -85,13 +85,18 @@ async def run_calibration(x):
     ]
 
     try:
-        # 1. Delete old CSV so we start fresh and write the header
+        # Clear or initialize the CSV file with headers before running the batch
+        header = "id,seed,rue_efficiency_factor,pest_infection_prob,pest_daily_increment,toxicity_per_straw_unit,solar_rad_threshold,max_diffuse_bonus,max_light_limit,steepness_factor,max_water_capacity,lateral_leakage_coefficient,water_excess_coefficient,error_yield,error_pesticide,error_fertilizer,error_water,fitness\n"
+        write_header = not os.path.exists(CSV_PATH) or os.path.getsize(CSV_PATH) == 0
+        with open(CSV_PATH, "a") as f:
+            if write_header:
+                f.write(header)
+        
+        # Count existing lines to know when new simulations are done
+        existing_lines = 0
         if os.path.exists(CSV_PATH):
-            os.remove(CSV_PATH)
-            
-        with open(CSV_PATH, "w", encoding="utf-8") as f:
-            header = "id,seed," + ",".join(PARAM_NAMES) + ",error_yield,error_pesticide,error_fertilizer,error_water,fitness\n"
-            f.write(header)
+            with open(CSV_PATH, "r", encoding="utf-8") as f:
+                existing_lines = len(f.readlines())
 
         # 2. Connect all clients, load & play experiments
         params = x_to_params(x)
@@ -116,15 +121,17 @@ async def run_calibration(x):
                 print(f"  Client {i+1}: FAILED to load. Response: {response}")
 
         # 3. Wait for all results
-        print(f"\nAll simulations running. Waiting for {NUM_CLIENTS} results in CSV (This can take 10-30 minutes)...")
+        print(f"\nAll simulations running. Waiting for {NUM_CLIENTS} results in CSV (This can take 10-30 minutes)...\n")
+        
+        # 3. Wait for all CSV lines to be written
+        expected_lines = existing_lines + NUM_CLIENTS
         timeout = 3600
         elapsed = 0
         while elapsed < timeout:
             if os.path.exists(CSV_PATH):
                 with open(CSV_PATH, "r", encoding="utf-8") as f:
                     lines = f.readlines()
-                    # header + NUM_CLIENTS data lines
-                    if len(lines) > NUM_CLIENTS:
+                    if len(lines) >= expected_lines:
                         break
             await asyncio.sleep(2)
             elapsed += 2

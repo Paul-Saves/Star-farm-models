@@ -187,7 +187,7 @@ experiment single_evaluation type: batch until: end_of_sim repeat: 1 keep_seed: 
 	
 	init {
 		gama.pref_parallel_simulations_all <- false;
-		gama.pref_parallel_threads <- 1;
+		gama.pref_parallel_threads <- 4;
 		mode_batch <- true;
 		save_results <- false; 
 		write_results <- false;
