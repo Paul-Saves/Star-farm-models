@@ -22,7 +22,7 @@ PARAM_DEFS = [
 
 PARAM_NAMES = [p[0] for p in PARAM_DEFS]
 
-def generate_doe(num_samples=100, output_file="doe.csv"):
+def generate_doe(num_samples=110, output_file="doe_11_params.csv"):
     """
     Generates a Design of Experiments (LHS) for the 11 StarFarm parameters.
     """
@@ -30,7 +30,7 @@ def generate_doe(num_samples=100, output_file="doe.csv"):
     xlimits = np.array([[p[1], p[2]] for p in PARAM_DEFS])
     
     # Initialize Latin Hypercube Sampling
-    sampling = LHS(xlimits=xlimits)
+    sampling = LHS(xlimits=xlimits, criterion="ese", seed=41)
     
     # Generate points
     print(f"Generating {num_samples} samples for {len(PARAM_NAMES)} parameters...")
@@ -46,5 +46,5 @@ def generate_doe(num_samples=100, output_file="doe.csv"):
     return df
 
 if __name__ == "__main__":
-    # Generate 100 samples by default
-    generate_doe(100, "doe_11_params.csv")
+    # Generate 110 samples by default
+    generate_doe(110, "doe_11_params.csv")

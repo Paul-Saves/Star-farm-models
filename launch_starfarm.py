@@ -182,6 +182,5 @@ async def run_calibration(x):
 if __name__ == "__main__":
     # Test the exact baseline (Patrick's new defaults)
     baseline_x = [p[1] for p in PARAM_DEFS]
-    baseline_x2 = [p[2] for p in PARAM_DEFS]
     # Evaluate the baseline with NUM_CLIENTS repetitions (different seeds)
-    asyncio.run(run_calibration(baseline_x2))
+    asyncio.run(run_calibration(baseline_x))
