@@ -14,19 +14,19 @@ NUM_CLIENTS = 2
 
 # --- INPUT: parameter definitions (name, default, min, max, step) ---
 # Aligned with Calibration and Validation.gaml calibration_ experiment
-PARAM_DEFS = [
+PARAM_DEFS = [  
     # name,                        default,  min,    max,   step
-    ("rue_efficiency_factor",        0.71,    0.5,   0.85,  0.01),
+    ("rue_efficiency_factor",        0.68,    0.5,   0.85,  0.01),
     ("pest_infection_prob",          0.6,     0.4,   1.0,   0.1),
     ("pest_daily_increment",         0.04,    0.01,  0.1,   0.01),
-    ("toxicity_per_straw_unit",      0.024,   0.0,   0.02,  0.001),
-    ("solar_rad_threshold",          15.0,    10.0,  20.0,  0.1),
-    ("max_diffuse_bonus",            0.9,     0.0,   0.35,  0.01),
-    ("max_light_limit",              23.7,    18.0,  26.0,  0.1),
+    ("toxicity_per_straw_unit",      0.005,   0.0,   0.02,  0.001),
+    ("solar_rad_threshold",          18.0,    10.0,  20.0,  0.1),
+    ("max_diffuse_bonus",            0.32,    0.0,   0.35,  0.01),
+    ("max_light_limit",              21.5,    18.0,  26.0,  0.1),
     ("steepness_factor",             4.8,     2.0,   10.0,  0.1),
-    ("max_water_capacity",           74.0,    70.0,  120.0, 1.0),
-    ("lateral_leakage_coefficient",  0.005,   0.001, 0.1,   0.001),
-    ("water_excess_coefficient",     0.4,     0.1,   0.6,   0.01),
+    ("max_water_capacity",           79.0,    70.0,  120.0, 1.0),
+    ("lateral_leakage_coefficient",  0.01,    0.001, 0.1,   0.001),
+    ("water_excess_coefficient",     0.6,     0.1,   0.6,   0.01),
 ]
 
 PARAM_NAMES = [p[0] for p in PARAM_DEFS]
@@ -180,9 +180,8 @@ async def run_calibration(x):
 
 # --- MAIN ---
 if __name__ == "__main__":
-    if not os.path.exists(MODEL_PATH):
-        print(f"ERROR: Model file not found at {MODEL_PATH}")
-    else:
-        # Example x vector (from calibration_result_gen2.csv best row)
-        x = [0.71, 0.6, 0.04, 0.092, 12.0, 1.2, 24.1, 10.8, 78.0, 0.089, 0.4]
-        asyncio.run(run_calibration(x))
+    # Test the exact baseline (Patrick's new defaults)
+    baseline_x = [p[1] for p in PARAM_DEFS]
+    baseline_x2 = [p[2] for p in PARAM_DEFS]
+    # Evaluate the baseline with NUM_CLIENTS repetitions (different seeds)
+    asyncio.run(run_calibration(baseline_x2))

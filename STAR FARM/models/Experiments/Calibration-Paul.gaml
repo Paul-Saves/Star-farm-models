@@ -20,7 +20,11 @@ global  {
     
     string province <- DONG_THAP_OLD;
     
+    string BIO_PHYSICS <- "bio-physics";
+    string SOCIO_ENVIRONMENTAL <- "socio-environmental";
     
+    string calibration_type <- BIO_PHYSICS;
+
    
    map<string, list<list<float>>> historical_yields <- [
     
@@ -55,6 +59,11 @@ global  {
 
 
     bool fitness_computed <- false;
+    
+    reflex progress_monitor when: every(365 #days) {
+    	write "Progress: Year " + current_date.year + " / " + ending_date.year;
+    }
+    
     action compute_fitness() {
     	if not fitness_computed {
 	    	fitness <- 0.0; 
@@ -144,7 +153,7 @@ experiment check_result type: batch until: end_of_sim repeat: 1 keep_seed: true 
 
 	init { 
 		gama.pref_parallel_simulations_all <- false;
-		gama.pref_parallel_threads <- 4; 
+		gama.pref_parallel_threads <- 1; 
 		mode_batch <- true;
 		save_results <- false; 
 		write_results <- false;
@@ -160,7 +169,7 @@ experiment check_result type: batch until: end_of_sim repeat: 1 keep_seed: true 
 }   
 
 
-experiment single_evaluation type: batch until: end_of_sim repeat: 1 keep_seed: true parent: generic_exp  {
+experiment single_evaluation type: batch until: end_of_sim repeat: 1 keep_seed: true {
 	parameter "absolute_csv_path" var: calibration_output;
 	parameter "mode_batch" var: mode_batch <- true;
 	parameter "save_calibration_results" var: save_calibration_results <- true;
@@ -187,7 +196,7 @@ experiment single_evaluation type: batch until: end_of_sim repeat: 1 keep_seed: 
 	
 	init {
 		gama.pref_parallel_simulations_all <- false;
-		gama.pref_parallel_threads <- 4;
+		gama.pref_parallel_threads <- 1;
 		mode_batch <- true;
 		save_results <- false; 
 		write_results <- false;
